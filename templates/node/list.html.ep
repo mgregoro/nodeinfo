@@ -1,0 +1,169 @@
+% layout 'default';
+% title '[ni] - List of Darknet Nodes';
+% my $npp = $self->param('npp') || 10;
+% my $httponly = $self->param('httponly');
+% my @true = grep { $self->param($_) } qw/npp httponly/;
+% my $get_base = join('&', map { ("$_=" . $self->param($_)) } @true);
+<!-- start of the home.html.ep file -->
+<script>
+    var httponly = "<%= $httponly %>";
+    var npp = "<%= $npp %>";
+    $(function() {
+        if (httponly) {
+            $('#httponly').button('toggle');
+        }
+        $('#httponly').click(function() {
+            $(self).button('toggle');
+            if (httponly == 1) {
+                httponly = 0;
+            } else {
+                httponly = 1;
+            }
+
+            var new_get_base;
+            if (httponly && !npp) {
+                new_get_base = "?httponly=1";
+            } else if (!httponly && npp) {
+                new_get_base = "?npp=" + npp;
+            } else if (httponly && npp) {
+                new_get_base = "?httponly=1&npp=" + npp;
+            }
+
+
+            var la = document.location.toString().split(/\?/);
+            document.location = la[0] + new_get_base;
+            return false;
+        });
+    });
+</script>
+<div class="span12">
+  <div class="row">
+   <div class="span6">
+     <h2>List of Darknet Nodes</h2>
+   </div>
+   <div class="span6">
+     <a id="httponly" class="btn btn-success pull-right" href="#">HTTP Only</a>
+    </div>
+  </div>
+  <br/>
+  <style>
+      table {
+          table-layout: fixed;
+      }
+  </style>
+  <table class="table table-striped table-bordered">
+    <tr>
+      <th class="span3">Name</th>
+      <th class="span4">IPv6 Addr</th>
+      <th class="span3">Services</th>
+      <th class="span1">CJDP</th>
+      <th class="span1">ICMP</th>
+    </tr>
+    % foreach my $node ($nl->nodes_paged($page, $npp, $httponly)) {
+    <tr>
+      % my $name = $node->db->{hostname} ? $node->db->{hostname} : $node->db->{common_name};
+      % if ($node->runs_service("http")) {
+      <td><a href="http://[<%= $node->ip %>]/"><%= $name %></a></td>
+      % } else {
+      <td><%= $name %></td>
+      % }
+      <td><a href="/node/details/<%= $node->ip %>/"><%= $node->ip %></a></td>
+      <td>
+    % my $i = 0;
+    % foreach my $svc (@{$node->db->{services}}) {
+      % next if lc($svc->{service}) eq "unknown";
+      % next if lc($svc->{service}) eq "submission";
+      % next if lc($svc->{service}) eq "acmsoda";
+      % next if lc($svc->{service}) eq "chargen";
+      % $i++;
+      % if ($svc->{service} =~ /http/i) {
+          <a href="<%= $svc->{service} %>://[<%= $node->ip %>]:<%= $svc->{port} %>"><span class="label label-success"><%= $svc->{service} %></span></a> 
+      % } else {
+          <span class="label" title="<%= $svc->{service} %> on port <%= $svc->{port} %>"><%= $svc->{service} %></span>
+      % }
+      % last if $i == 5;
+    % }
+      </td>
+      <td><%= $node->cjdping %></td>
+      <td><%= $node->ping %></td>
+    </tr>
+  % }
+  </table>
+  <div class="pagination">
+    % if ($page == 1) {
+    <li class="prev disabled">
+      <a href="#">← Previous</a>
+    </li>
+    % } else {
+    <li class="prev">
+        <a href="<%= $page - 1 %>?<%= $get_base %>">← Previous</a>
+    </li>
+    % }
+    % if ($nl->nodes_pages($npp, $httponly) > 14) {
+      % if ($page == 1) {
+        % foreach my $pn ($page..$page + 6) {
+          % if ($pn == $page) {
+            <li class="active">
+          % } else {
+            <li>
+          % }
+              <a href="<%= $pn %>?<%= $get_base %>"><%= $pn %></a>
+          </li>
+        % }
+      % } elsif ($page < $nl->nodes_pages($npp, $httponly) - 6) {
+        <li>
+            <a href="<%= $page - 1 %>?<%= $get_base %>"><%= $page - 1 %></a>
+        </li>
+        <li class="active">
+            <a href="<%= $page %>?<%= $get_base %>"><%= $page %></a>
+        </li>
+        % foreach my $pn ($page + 1..$page + 6) {
+          <li>
+              <a href="<%= $pn %>?<%= $get_base %>"><%= $pn %></a>
+          </li>
+        % }
+      % } else {
+        % foreach my $pn (1..7) {
+          <li>
+              <a href="<%= $pn %>?<%= $get_base %>"><%= $pn %></a>
+          </li>
+        % }
+      % }
+      <li class="disabled">
+        <a href="#">…</a>
+      </li>
+      % foreach my $pn ($nl->nodes_pages($npp, $httponly) - 6..$nl->nodes_pages($npp, $httponly)) {
+        % if ($page == $pn) {
+          <li class="active">
+        % } else {
+          <li>
+        % }
+            <a href="<%= $pn %>?<%= $get_base %>"><%= $pn %></a>
+        </li>
+      % }
+    % } else {
+      % foreach my $pn (1..$nl->nodes_pages($npp, $httponly)) {
+        % if ($pn == $page) {
+          <li class="active">
+              <a href="<%= $pn %>?<%= $get_base %>"><%= $pn %></a>
+          </li>
+        % } else {
+          <li>
+            <a href="<%= $pn %>?<%= $get_base %>"><%= $pn %></a>
+          </li>
+        % }
+      % }
+    % }
+
+    % if ($page == $nl->nodes_pages($npp, $httponly)) {
+      <li class="next disabled">
+        <a href="#">Next →</a>
+      </li>
+    % } else {
+      <li class="next">
+        <a href="<%= $page + 1 %>?<%= $get_base %>">Next →</a>
+      </li>
+    % }
+  </div>
+</div>
+<!-- end of the home.html.ep file -->

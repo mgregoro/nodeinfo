@@ -1,0 +1,97 @@
+% layout 'default';
+% title '[ni] - Live List of Darknet Nodes';
+<!-- stanl of the home.html.ep file -->
+<div class="span12">
+  <h2>Live List of Darknet Nodes</h2></br>
+  <table class="table table-striped table-bordered">
+    <tr>
+      <th>Name</th>
+      <th>IPv6 Addr</th>
+      <th>Link Quality</th>
+    </tr>
+  % foreach my $node (sort {$b->link <=> $a->link} $nl->nodes_paged($page, 10)) {
+    <tr>
+      <td><a href="/nodes/live/details/<%= $node->ip %>/"><%= $node->name %></a></td>
+      <td><a href="/nodes/live/details/<%= $node->ip %>/"><%= $node->ip %></a></td>
+      <td><%= $node->link %></td>
+    </tr>
+  % }
+  </table>
+  <div class="pagination">
+    % if ($page == 1) {
+    <li class="prev disabled">
+      <a href="#">← Previous</a>
+    </li>
+    % } else {
+    <li class="prev">
+      <a href="<%= $page - 1 %>">← Previous</a>
+    </li>
+    % }
+    % if ($nl->nodes_pages(10) > 14) {
+      % if ($page == 1) {
+        % foreach my $pn ($page..$page + 6) {
+          % if ($pn == $page) {
+            <li class="active">
+          % } else {
+            <li>
+          % }
+            <a href="<%= $pn %>"><%= $pn %></a>
+          </li>
+        % }
+      % } elsif ($page < $nl->nodes_pages(10) - 6) {
+        <li>
+          <a href="<%= $page - 1 %>"><%= $page - 1 %></a>
+        </li>
+        <li class="active">
+          <a href="<%= $page %>"><%= $page %></a>
+        </li>
+        % foreach my $pn ($page + 1..$page + 6) {
+          <li>
+            <a href="<%= $pn %>"><%= $pn %></a>
+          </li>
+        % }
+      % } else {
+        % foreach my $pn (1..7) {
+          <li>
+            <a href="<%= $pn %>"><%= $pn %></a>
+          </li>
+        % }
+      % }
+      <li class="disabled">
+        <a href="#">…</a>
+      </li>
+      % foreach my $pn ($nl->nodes_pages(10) - 6..$nl->nodes_pages(10)) {
+        % if ($page == $pn) {
+          <li class="active">
+        % } else {
+          <li>
+        % }
+          <a href="<%= $pn %>"><%= $pn %></a>
+        </li>
+      % }
+    % } else {
+      % foreach my $pn (1..$nl->nodes_pages(10)) {
+        % if ($pn == $page) {
+          <li class="active">
+            <a href="<%= $pn %>"><%= $pn %></a>
+          </li>
+        % } else {
+          <li>
+            <a href="<%= $pn %>"><%= $pn %></a>
+          </li>
+        % }
+      % }
+    % }
+
+    % if ($page == $nl->nodes_pages(10)) {
+      <li class="next disabled">
+        <a href="#">Next →</a>
+      </li>
+    % } else {
+      <li class="next">
+        <a href="<%= $page + 1 %>">Next →</a>
+      </li>
+    % }
+  </div>
+</div>
+<!-- end of the home.html.ep file -->

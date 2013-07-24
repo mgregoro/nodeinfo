@@ -1,0 +1,117 @@
+% layout 'default';
+% title '[ni] - HypeDNS';
+<div class="span12">
+
+<div class="span4 pull-right" style="text-align: center">
+<ul class="breadcrumb">
+  <li><a href="#set">Set Your HypeDNS Host Name</a></li>
+</ul>
+</div>
+
+<div class="page-header" style="margin: 0; background-color: #fff">
+  <h1>HypeDNS</h1>
+</div>
+  <p>To keep us from having to type in <abbr title="Internet Protocol Version 6.. (ffff:uuuu:cccc:kkkk:mmmm:eeee:eeee:eeee)">IPv6</abbr> numbers all of the time while we wait for a wonderful <abbr title="Peer to Peer">P2P</abbr> based <abbr title="Domain Name Server">DNS</abbr>
+  system to emerge, I threw together HypeDNS.  It's a Domain Name Server powered by the NodeInfo application 
+  database.  Hopefully it will be the last <abbr title="Domain Name Server">DNS</abbr> server humanity ever writes, for the time being it should help us
+  get around the hypenet while we get our proper footing.</p>
+
+  <p><strong>"So, how does HypeDNS work?"</strong> I'm glad you asked!  The HypeDNS server was painstakingly hand crafted by 
+  artisan programmers to provide you with the kind of refinements you'd expect from a modern day domain name server.  The server
+  first looks for names stored in the NodeInfo database, and if found, returns the address (or name if reversing!) post haste!  If
+  the domain is not found, or it is a request for an A record (<abbr title="Internet Protocol Version 4">IPv4</abbr>), the query
+  is forwarded on to ns03.mg2.org, or ns04.mg2.org, my local name servers.</p>
+
+  <p><strong>"Uhm, okay... but how do I <em>use</em> it?"</strong> The best way to get started is to edit your <code>/etc/resolv.conf</code>
+  file on your machine to include the HypeDNS <abbr title="Internet Protocol Version 6">IPv6</abbr> server <code>fc5d:baa5:61fc:6ffd:9554:67f0:e290:7535</code>
+  <em>which just so happens to be the same IP as the NodeInfo server,</em> <a href="http://nodeinfo.hype">nodeinfo.hype</a>.  So when you
+  go to edit your <code>/etc/resolv.conf</code> file, it should look something like...</p>
+
+  <pre style="margin: 15px 0 15px 0">
+    nameserver 216.150.225.242
+    nameserver 216.150.225.243</pre>
+
+  <p>What you need to do is edit it so it looks like the one below.  Make sure your file starts with the 
+  line with the <abbr title="Internet Protocol Version 6">IPv6</abbr> address at the top above all of the 
+  other <abbr title="Internet Protocol Version 4">IPv4</abbr> <code>nameserver</code> listings.  When you're 
+  done it should look like...</p>
+
+  <pre style="margin: 15px 0 15px 0">
+  nameserver fc5d:baa5:61fc:6ffd:9554:67f0:e290:7535
+  nameserver 141.217.65.13
+  nameserver 141.217.65.15</pre>
+
+  <p>And that's that!  You should be able to <code>ping6 nodeinfo.hype</code> now and get a response!  People have reported 
+  problems with Chrome/Chromium not doing the right thing with the new DNS info.  I'm not sure if there's a really persistent
+  cache in Chrome or what, but Firefox is amazing.  It does the right thing with every single name in the database, even the
+  non-hostnames from <a href="http://[fc38:4c2c:1a8f:3981:f2e7:c2b9:6870:6e84]/cjdns.html">ircerr's file</a>.</p>
+
+  <div class="page-header" style="margin:0; background-color: #fff">
+    <a name="set"></a>
+    <h1>Set Your HypeDNS Host Name</h1>
+  </div>
+  % my $remote_ip = $self->remote_ip;
+  % my $node = $nl->node($remote_ip);
+  % if ($node) {
+    <script>
+        $(function() {
+            $('#edit-settings').click(function() {
+                document.location = "/node/details/<%== $remote_ip %>/#edit_settings";
+                return false;
+            });
+        });
+    </script>
+  % }
+  <p>Above we talked about how to set up your machine to use HypeDNS on the cjdns-powered hypenet.  Now I'll outline how to 
+  set up your very own host name for your node!
+
+  % if ($node) {
+  Hmm.. since you appear to be using NodeInfo from a valid hypenet IP address, you could set your hostname by clicking 
+  <a href="#" id="edit-settings">here</a>.  By the way, 
+  thanks for not proxying people in (if you did allow an open proxy in, <em>anyone</em> with access could change your hostname).
+  % }
+  </p>
+  <p>
+  You can use the <code>hypehost</code> script to set the hostname of your node.  It requires a Perl module
+  be installed <code>IO::Socket::INET6</code> which comes with newer versions of Perl, but not with some of the older ones.  If 
+  you are running a dpkg-based OS, you can run <code>sudo apt-get install libio-socket-inet6-perl</code> to get it installed.  You
+  can download the script <a href="/files/hypehost.tar.gz">here</a>.  Untar it <code>tar -xzvf hypehost.tar.gz</code> and 
+  cd into the hypehost directory.  This program is inspired by the default, no-options behavior of <code>hostname(1)</code>.  Running
+  the command with no arguments, will simply print your hypenet hostname.  Running it with an argument will set your hypenet hostname.
+ 
+  <pre style="margin: 15px 0 15px 0">
+  # get the current hypehost of this node.
+  $ ./hypehost 
+  nodeinfo.hype
+
+  # set a new hypehost!
+  $ ./hypehost something.else
+  something.else
+
+  # mmhm.  it resolves!
+  $ ping6 something.else
+  PING something.else(something.else) 56 data bytes
+  64 bytes from something.else: icmp_seq=1 ttl=64 time=0.020 ms
+
+  # keeping the hypenet safe since 2012.
+  $ ./hypehost google.com
+  [hypehost/err] hostname google.com conflicts with ICANN/IANA domain '.com'</pre>
+
+  <p><strong>ADVANCED:</strong> if you have multiple nodes on one machine, you can use the <code>hypehost</code> command
+  to set the values of all of them.  Just specify which <abbr title="Internet Protocol Version 6">IPv6</abbr> address you want to set the HypeDNS host name for as the 
+  first argument.</p>
+
+  <pre style="margin: 15px 0 15px 0">
+  # another node on this box, the hypenet's premiere git server
+  $ ./hypehost fcd5:c432:affb:7e77:a754:74e0:5e98:12d3
+  git.hype
+
+  # we can change its hostname thusly
+  $ ./hypehost fcd5:c432:affb:7e77:a754:74e0:5e98:12d3 git.lost
+  git.lost</pre>
+
+  <p>Ok kids, I hope you find this tool useful and successful.  We're working to build a lot of this functionality into the core 
+  of the network archetecture, so we won't have to worry about specific name servers and configuration, host names will be 
+  part of the fabric of the network, much like routing, switching, and cryptography is with <code>cjdns</code>.</p>
+
+</div>

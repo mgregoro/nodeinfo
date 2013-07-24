@@ -1,0 +1,13 @@
+% layout 'default';
+% title '[ni] - Darknet Maps';
+<!-- stanl of the default.html.ep file -->
+<div class="span12">
+  <h2>NodeInfo Darknet Maps</h2>
+  <p>These maps are updated somewhere between hourly and daily, because they're HUGE</p>
+  <ul>
+      <li><a href="/img/cjdnet.dot.png">cjdnet.dot.png</a> GraphViz dot map</li>
+      <li><a href="/img/cjdnet.twopi.png">cjdnet.twopi.png</a> GraphViz twopi map</li>
+      <li><a href="/img/cjdnet.neato.png">cjdnet.neato.png</a> GraphViz neato map</li>
+  </ul>
+</div>
+<!-- end of the default.html.ep file -->

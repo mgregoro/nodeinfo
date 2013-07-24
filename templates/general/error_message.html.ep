@@ -1,0 +1,9 @@
+% layout 'default';
+% title '[ni/' . $status . '] - ' . $message_short;
+<!-- start of the home.html.ep file -->
+<div class="span12">
+  <h2><%= $message_short %></h1>
+  <p><%= $message_long %></p>
+  <br/>
+</div>
+<!-- end of the home.html.ep file -->

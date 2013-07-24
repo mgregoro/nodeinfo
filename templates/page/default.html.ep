@@ -1,0 +1,58 @@
+% layout 'default';
+% title '[ni] - NodeInfo Main';
+<!-- stanl of the home.html.ep file -->
+<div class="span9">
+  <h2>Hello Darknetizen</h2>
+  <p>I'm still working on the database backend and stuff, but I wanted to make what I have already done
+  available to everyone on the <code>cjdns</code> powered Darknet Hyperboria.  Please be patient as I get things up and running
+  and if you have any questions or feature requests, hit up <a href="mailto:mike@mg2.org">mike@mg2.org</a>.</p>
+  <p>The only tool working right now is the <a href="/nodes/list/">Node List</a> which queries the two
+  <code>cjdns</code> nodes I have running at my colo for their routing tables.  <span style="text-decoration: line-through">I'm working on a
+      permanent database</span> and the ability for you to securely edit information about the nodes that you operate.</p>
+
+  <p>--_-</p>
+  <p>Mikey G</p>
+</div>
+<div class="span3">
+  <dl style="margin: 2px;">
+    <dt>NodeInfo v0.01</dt>
+    <dd>NodeInfo is a database of known nodes on cjdns-based Darknets</dd>
+    </br>
+    <dt>Questions / Help</dt>
+    <dd>Email <a href="mailto:mike@mg2.org">Mikey G</a>, or Mikey_/Mikey on EFnet</dd>
+    </br>
+    <dt>Darknet DNS (HypeDNS)</dt>
+    <dd>Visit <a href="/hypedns">HypeDNS</a></dd>
+    </br>
+    <dt>Other Darknet Resources</dt>
+    <dd>
+      <ul>
+        <li><a href="http://[fc38:4c2c:1a8f:3981:f2e7:c2b9:6870:6e84]/cjdns.html">ircerr's cjdns homepage</a></li>
+        <li><a href="http://[fcd5:c432:affb:7e77:a754:74e0:5e98:12d3]">darknet git server</a></li>
+      </ul>
+    </dd>
+    % my $remote_ip = $self->remote_ip;
+    % my $node = $nl->node($remote_ip);
+    % if ($node) {
+    <script>
+        $(function() {
+            $('#edit-settings').click(function() {
+                document.location = "/node/details/<%== $remote_ip %>/#edit_settings";
+                return false;
+            });
+        });
+    </script>
+    <dt>Your Darknet Info</dt>
+    <dd>
+       <button class="btn-success" style="margin: 5px 0 5px 20px" id="edit-settings">Edit My Info</button>
+    </dd>
+    % }
+  </dl>
+  <div style="font-size: 11px">
+    NodeInfo v0.01 - (?) 2012 mg2
+  </div>
+  <div style="font-size: 11px">
+    if i have any rights - they're reserved
+  </div>
+</div>
+<!-- end of the home.html.ep file -->

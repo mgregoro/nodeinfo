@@ -1,0 +1,11 @@
+      % my $comment = $self->stash('comment');
+      % my @tc = localtime($comment->{comment_time});
+      % my $datestr = sprintf("%02d/%02d/%d %02d:%02d:%02d %s", $tc[4] + 1, $tc[3], $tc[5] + 1900, $tc[2], $tc[1], $tc[0], $tc[8] ? "EDT" : "EST");
+      <div style="padding: 5px; margin: 4px 0 4px;" class="well" id="<%= $comment->{comment_id} %>">
+          <div class="pull-right"><strong><%= $datestr %></strong></div>
+          <h5><a href="/node/details/<%= $comment->{comment_author} %>/"><%= $self->nl->node($comment->{comment_author})->name %></a></h5>
+          <%== $comment->{comment_text} %>
+          % if ($self->remote_ip eq $comment->{comment_author}) {
+              <div class="pull-right"><a style="margin-top: -15px;" class="close delete-comment" href="./comment?delete=<%= $comment->{comment_id} %>">&times;</a></div>
+          % }
+      </div>

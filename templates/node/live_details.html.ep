@@ -1,0 +1,50 @@
+% layout 'default';
+% title '[ni] - NodeInfo for ' . $node;
+<!-- stanl of the home.html.ep file -->
+<div class="span1"></div>
+<div class="span5">
+  <h2>NodeInfo for <%= $node->name %></h2><br/>
+  <dl>
+    <dt>IPv6 Address</dt>
+    <dd><%= $node->ip %></dd>
+    <dt>ICMP Response Time</dt>
+    <dd><%= $ping %></dd>
+    <dt>CJDNS Link Quality</dt>
+    <dd><%= $node->link %></dd>
+  </dl>
+  <button class="btn primary" id="go-back">Go Back</button>
+</div>
+<div class="span5" style="overflow: auto;">
+<pre id="nmap">[0] Loading nmap data...<img src="/img/loading.gif"/></pre>
+</div>
+<script>
+    var ip = "<%= $node->ip %>";
+    var nmap_done = false;
+    var nmap_poll = 0;
+    var nmap_uuid;
+
+    function poll_nmap () {
+        $.get('./nmap', { uuid: nmap_uuid }, function(data) {
+            if (data == "wait") {
+                nmap_poll++;
+                $('#nmap').html("[" + nmap_poll + "] Nmap still running...<img src='/img/loading.gif'/>");
+                setTimeout('poll_nmap()', 3000);
+            } else {
+                data = data.replace(/\shttp\s/, ' <a href="http://[' + ip + ']/">http</a>\n');
+                data = data.replace(/\shttps\s/, ' <a href="https://[' + ip + ']/">https</a>\n');
+                $('#nmap').html(data);
+            }
+        });
+    }
+
+    $(function() {
+        $.get('./nmap', function(data) {
+            nmap_uuid = data;
+            setTimeout('poll_nmap()', 3000);
+        });
+        $('#go-back').click(function() {
+            document.location = "../../";
+        });
+    });
+</script>
+<!-- end of the home.html.ep file -->
